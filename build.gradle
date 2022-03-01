@@ -1,8 +1,13 @@
 plugins {
-    id 'org.springframework.boot' version '2.2.1.RELEASE'
+    id 'org.springframework.boot' version '2.2.5.RELEASE'
+    id 'io.spring.dependency-management' version '1.0.9.RELEASE'
+    id 'java'
     id 'com.adarshr.test-logger' version '1.6.0'
 }
 ext.junitJupiterVersion = '5.3.2'
+
+def springfoxVersion = '3.0.0'
+def springfoxUiVersion = '2.9.2'
 
 apply plugin: 'java'
 apply plugin: 'groovy'
@@ -17,7 +22,7 @@ repositories {
 }
 
 dependencies {
-
+    implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-actuator'
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-aop'
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-web'
@@ -26,6 +31,10 @@ dependencies {
     compile group: 'org.springframework.boot', name: 'spring-boot-starter-data-jpa'
     compile group: 'org.projectlombok', name: 'lombok'
     annotationProcessor group: 'org.projectlombok', name: 'lombok'
+    compile group: 'io.springfox', name: 'springfox-swagger2', version: '2.7.0'
+    compile group: 'io.springfox', name: 'springfox-swagger-ui', version: '2.7.0'
+//    compile "io.springfox:springfox-swagger2:${springfoxVersion}"
+//    compile "io.springfox:springfox-swagger-ui:${springfoxUiVersion}"
 
     runtime group: 'com.h2database', name: 'h2'
 
