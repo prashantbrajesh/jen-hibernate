@@ -42,16 +42,15 @@ public class JobController {
 
     @PatchMapping(path = "/{id}/cancel")
     @ResponseBody
-    public ResponseDtoWrapper<Boolean> cancelJob(@PathVariable("id") UUID jobId) {
+    public ResponseDtoWrapper<Boolean> cancelJobsAndShifts(@PathVariable("id") UUID jobId) {
         ResponseDtoWrapper<Boolean> responseDtoWrapper = new ResponseDtoWrapper<>();
-        List<Job> jobs = jobService.getJobs(jobId);
-        if (jobs.size() == 0) {
+        Boolean jobsCanceled = jobService.cancelJob(jobId);
+        if (!jobsCanceled) {
             return responseDtoWrapper
                     .setData(false)
                     .addError(new ResponseDtoWrapper.Status(404, "Job not found" + jobId));
-
         }
-        jobService.cancelJob(jobId);
+
         return responseDtoWrapper
                 .setData(true);
 

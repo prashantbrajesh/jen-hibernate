@@ -8,10 +8,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneOffset;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.LongStream;
@@ -83,13 +85,20 @@ public class JobService {
 
     public Boolean cancelSiftByTanentId(UUID tanentId) {
 
-        Long siftCount = shiftRepository.findAllByTalentId(tanentId).stream()
-                .map(shift -> shiftRepository.saveAndFlush(shift.setIsCanceled(true))).count();
+        List<Shift> sifts = shiftRepository.findAllByTalentId(tanentId).stream()
+                .map(shift -> shiftRepository.saveAndFlush(shift.setIsCanceled(true))).collect(Collectors.toList());
+
+        Set<Instant> collect = sifts.stream().map(sift -> sift.getCreatedAt()).collect(Collectors.toSet());
 
         // AND replacement shifts are created with the same dates ??
         // Presumption for any tanent as for particular tanent all tasks are already canceled
+        shiftRepository.findAll().stream()
+                .filter(sift -> collect.contains(sift.getCreatedAt()))
+                .map(sift -> shiftRepository.save(sift.setTalentId(tanentId)))
+                .collect(Collectors.toList());
 
-        return siftCount == 1;
+
+        return sifts.size() > 0;
     }
 
     public List<Shift> getShifts(UUID id) {

@@ -38,7 +38,8 @@ public class Job {
     private Instant startTime;
     private Instant endTime;
 
-    private Boolean isCanceled;
+    @Builder.Default
+    private Boolean isCanceled = false;
 
     // fetch eager for debugging
 

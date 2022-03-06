@@ -1,6 +1,8 @@
 package com.zenjob.challenge.controller;
 
 import com.zenjob.challenge.dto.ResponseDto;
+import com.zenjob.challenge.dto.ResponseDtoWrapper;
+import com.zenjob.challenge.entity.Job;
 import com.zenjob.challenge.service.JobService;
 import lombok.Builder;
 import lombok.Data;
@@ -53,6 +55,39 @@ public class ShiftController {
         jobService.bookTalent(shiftId, dto.talent);
     }
 
+
+    @PatchMapping(path = "/{id}/cancel")
+    @ResponseBody
+    public ResponseDtoWrapper<Boolean> cancelSift(@PathVariable("id") UUID siftId) {
+        ResponseDtoWrapper<Boolean> responseDtoWrapper = new ResponseDtoWrapper<>();
+        Boolean siftsCanceled = jobService.cancelSiftBySiftId(siftId);
+        if (!siftsCanceled) {
+            return responseDtoWrapper
+                    .setData(false)
+                    .addError(new ResponseDtoWrapper.Status(404, "Sift not found" + siftId));
+
+        }
+        return responseDtoWrapper
+                .setData(true);
+
+    }
+
+    @PatchMapping(path = "/tanentId/{id}/cancel")
+    @ResponseBody
+    public ResponseDtoWrapper<Boolean> cancelSiftByTenantId(@PathVariable("tanentId") UUID tanentId) {
+        ResponseDtoWrapper<Boolean> responseDtoWrapper = new ResponseDtoWrapper<>();
+        Boolean siftsCanceled = jobService.cancelSiftByTanentId(tanentId);
+        if (!siftsCanceled) {
+            return responseDtoWrapper
+                    .setData(false)
+                    .addError(new ResponseDtoWrapper.Status(404, "tanentId not found" + tanentId));
+
+        }
+        return responseDtoWrapper
+                .setData(true);
+
+    }
+
     @NoArgsConstructor
     @Data
     private static class BookTalentRequestDto {
@@ -68,9 +103,9 @@ public class ShiftController {
     @Builder
     @Data
     private static class ShiftResponse {
-        UUID    id;
-        UUID    talentId;
-        UUID    jobId;
+        UUID id;
+        UUID talentId;
+        UUID jobId;
         Instant start;
         Instant end;
     }

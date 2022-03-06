@@ -39,7 +39,8 @@ public class Shift {
 
     private UUID talentId;
 
-    private Boolean isCanceled;
+    @Builder.Default
+    private Boolean isCanceled = false;
 
 
     private Instant startTime;
