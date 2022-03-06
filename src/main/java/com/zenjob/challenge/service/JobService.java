@@ -20,7 +20,7 @@ import java.util.stream.LongStream;
 @Repository
 @Transactional
 public class JobService {
-    private final JobRepository   jobRepository;
+    private final JobRepository jobRepository;
     private final ShiftRepository shiftRepository;
 
     public Job createJob(UUID uuid, LocalDate date1, LocalDate date2) {
@@ -42,8 +42,62 @@ public class JobService {
         return jobRepository.save(job);
     }
 
+    /*
+    Task A
+        AS a company
+        I CAN cancel a job I ordered previously
+        AND if the job gets cancelled all of its shifts get cancelled as well
+     */
+
+    public Boolean cancelJob(UUID id) {
+
+        Long siftCount = shiftRepository.findAllByJob_Id(id).stream()
+                .map(shift -> shiftRepository.saveAndFlush(shift.setIsCanceled(true))).count();
+        Long jobCount = jobRepository.findAllById(id)
+                .stream().map(
+                        job -> jobRepository.saveAndFlush(job.setIsCanceled(true))
+                ).count();
+        return siftCount > 0 || jobCount > 0;
+    }
+
+    /*
+      Task B
+            AS a company
+            I CAN cancel a single shift of a job I ordered previously
+     */
+    public Boolean cancelSiftBySiftId(UUID siftId) {
+
+        Long siftCount = shiftRepository.findAllById(siftId).stream()
+                .map(shift -> shiftRepository.saveAndFlush(shift.setIsCanceled(true))).count();
+
+        return siftCount == 1;
+    }
+
+
+    /*
+    Task C
+        AS a company
+        I CAN cancel all of my shifts which were booked for a specific talent
+        AND replacement shifts are created with the same dates
+     */
+
+    public Boolean cancelSiftByTanentId(UUID tanentId) {
+
+        Long siftCount = shiftRepository.findAllByTalentId(tanentId).stream()
+                .map(shift -> shiftRepository.saveAndFlush(shift.setIsCanceled(true))).count();
+
+        // AND replacement shifts are created with the same dates ??
+        // Presumption for any tanent as for particular tanent all tasks are already canceled
+
+        return siftCount == 1;
+    }
+
     public List<Shift> getShifts(UUID id) {
         return shiftRepository.findAllByJob_Id(id);
+    }
+
+    public List<Job> getJobs(UUID id) {
+        return jobRepository.findAllById(id);
     }
 
     public void bookTalent(UUID talent, UUID shiftId) {

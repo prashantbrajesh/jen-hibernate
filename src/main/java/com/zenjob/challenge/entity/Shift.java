@@ -39,6 +39,9 @@ public class Shift {
 
     private UUID talentId;
 
+    private Boolean isCanceled;
+
+
     private Instant startTime;
     private Instant endTime;
 

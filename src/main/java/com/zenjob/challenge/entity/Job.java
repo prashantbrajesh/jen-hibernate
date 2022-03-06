@@ -4,17 +4,12 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.Accessors;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.EntityListeners;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
-import javax.persistence.Version;
+import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -22,11 +17,12 @@ import java.util.List;
 import java.util.UUID;
 
 @Entity
-@Table(name = "job_process")
+@Table(name = "job")
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
 @Builder
+@Accessors(chain = true)
 @EntityListeners(AuditingEntityListener.class)
 public class Job {
 
@@ -42,7 +38,11 @@ public class Job {
     private Instant startTime;
     private Instant endTime;
 
-    @OneToMany(cascade = CascadeType.ALL,
+    private Boolean isCanceled;
+
+    // fetch eager for debugging
+
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL,
             mappedBy = "job", orphanRemoval = true)
     @Builder.Default
     private List<Shift> shifts = new ArrayList<>();

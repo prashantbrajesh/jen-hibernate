@@ -11,4 +11,8 @@ import java.util.UUID;
 public interface ShiftRepository extends JpaRepository<Shift, UUID> {
 
     List<Shift> findAllByJob_Id(UUID uuid);
+
+    List<Shift> findAllByTalentId(UUID uuid);
+
+    List<Shift> findAllById(UUID uuid);
 }
